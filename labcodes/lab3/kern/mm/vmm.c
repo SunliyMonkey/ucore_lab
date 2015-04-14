@@ -347,7 +347,7 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     ret = -E_NO_MEM;
 
     pte_t *ptep=NULL;
-    /*LAB3 EXERCISE 1: YOUR CODE
+    /*LAB3 EXERCISE 1: 2014210930
     * Maybe you want help comment, BELOW comments can help you finish the code
     *
     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
@@ -395,7 +395,36 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
             goto failed;
         }
    }
+
+
 #endif
+	ptep = get_pte(mm->pgdir, addr, 1);
+	if(!ptep){
+		cprintf("do_pgfault error: ptep\n");
+		goto failed;
+	}
+	if(*ptep == 0){
+		if(pgdir_alloc_page(mm->pgdir, addr, perm)== NULL){
+			cprintf("pgdir_alloc_page error\n");
+			goto failed;
+		}
+	}else {
+		if(swap_init_ok){
+			struct Page* page=NULL;
+			ret = swap_in(mm, addr, &page);
+			if(ret != 0){
+				cprintf("do_pgfault error: swap_in\n");
+			}
+			page_insert(mm->pgdir, page, addr, perm);
+			swap_map_swappable(mm, addr, page, 1);
+		}else {
+			cprintf("swap_init_ok error\n");
+			goto failed;
+		}
+	
+	}
+
+
    ret = 0;
 failed:
     return ret;

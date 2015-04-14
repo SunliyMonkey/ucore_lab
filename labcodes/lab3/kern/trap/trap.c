@@ -48,6 +48,16 @@ idt_init(void) {
       *     You don't know the meaning of this instruction? just google it! and check the libs/x86.h to know more.
       *     Notice: the argument of lidt is idt_pd. try to find it!
       */
+	extern uintptr_t __vectors[256];
+	int i;
+	for(i = 0; i < 256; i++){
+		if(i != T_SYSCALL){
+			SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], 0);
+		}else {
+			SETGATE(idt[i], 1, GD_KTEXT, __vectors[i], 3);
+		}
+	}
+	lidt(&idt_pd);
 }
 
 static const char *
@@ -180,12 +190,16 @@ trap_dispatch(struct trapframe *tf) {
     LAB3 : If some page replacement algorithm(such as CLOCK PRA) need tick to change the priority of pages, 
     then you can add code here. 
 #endif
-        /* LAB1 YOUR CODE : STEP 3 */
+        /* LAB1 2014210930 : STEP 3 */
         /* handle the timer interrupt */
         /* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
          * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
          * (3) Too Simple? Yes, I think so!
          */
+		ticks++;
+		if(ticks % TICK_NUM ==0)
+			print_ticks();
+
         break;
     case IRQ_OFFSET + IRQ_COM1:
         c = cons_getc();
