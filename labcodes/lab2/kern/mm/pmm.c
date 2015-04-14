@@ -388,10 +388,10 @@ get_pte(pde_t *pgdir, uintptr_t la, bool create) {
 		if(page != NULL){
 			set_page_ref(page, 1);
 			pa = page2pa(page);
-			memset((void *)pa, 0, 4096);
+			memset(KADDR(pa), 0, 4096);
 			*pd_entry = pa | PTE_U | PTE_W | PTE_P;
-			cprintf("la=0x%08x alloc page: pa=0x%08x\n", la, pa);
-			cprintf("pd_entry = 0x%08x\n", *pd_entry);
+			//cprintf("la=0x%08x alloc page: pa=0x%08x\n", la, pa);
+			//cprintf("pd_entry = 0x%08x\n", *pd_entry);
 		}
 	}else{
 		pa = PDE_ADDR(*pd_entry);

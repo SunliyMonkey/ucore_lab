@@ -85,14 +85,15 @@ default_init_memmap(struct Page *base, size_t n) {
 
 static void 
 showList(list_entry_t* list){
+	return;
 	list_entry_t *te = list_next(list);
 	 
 	while (te != list) {
         struct Page *p = le2page(te, page_link);
         te = list_next(te);
-		cprintf("[0x%08x,%d] ", p, p->property);
+		//cprintf("[0x%08x,%d] ", p, p->property);
 	}
-	cprintf("\n");
+	//cprintf("\n");
 }
 
 static struct Page *
@@ -102,9 +103,9 @@ default_alloc_pages(size_t n) {
         return NULL;
     }
 	
-	cprintf("allocate %d pages: \n", n);
+	//cprintf("allocate %d pages: \n", n);
     
-	cprintf("before allocate: ");
+	//cprintf("before allocate: ");
 	showList(&free_list);
 	
 	struct Page *page = NULL;
@@ -131,23 +132,23 @@ default_alloc_pages(size_t n) {
 		SetPageReserved(page);
     }
 
-	cprintf("after allocate: ");
+	//cprintf("after allocate: ");
 	showList(&free_list);
 
-	cprintf("allocate: ");
+	//cprintf("allocate: ");
 	if(page == NULL){
-		cprintf("NULL\n");
+		//cprintf("NULL\n");
 	}else {
-		cprintf("[0x%08x,%d] ", page, page->property);
+		//cprintf("[0x%08x,%d] ", page, page->property);
 	}
-	cprintf("\n");
+	//cprintf("\n");
     return page;
 }
 
 static void
 default_free_pages(struct Page *base, size_t n) {
     assert(n > 0);
-	cprintf("Free pages: start=0x%08x len=%d\n", base, n);
+	//cprintf("Free pages: start=0x%08x len=%d\n", base, n);
 	struct Page *p = base;
     ClearPageReserved(base);
 	for (; p != base + n; p ++) {
@@ -163,7 +164,7 @@ default_free_pages(struct Page *base, size_t n) {
    
 	nr_free += n;
    
-	cprintf("before Free: ");	
+	//cprintf("before Free: ");	
 	showList(&free_list);
 
 	while (le != &free_list) {
@@ -186,7 +187,7 @@ default_free_pages(struct Page *base, size_t n) {
 	if(le == &free_list) 
 		list_add_before(&free_list, &(base->page_link));
 
-	cprintf("after Free: ");	
+	//cprintf("after Free: ");	
 	showList(&free_list);
 }
 
